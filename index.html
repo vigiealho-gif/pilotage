@@ -178,6 +178,7 @@
       <span id="periodLabel">— vue d'ensemble</span>
     </div>
     <div class="controls">
+      <div class="tabs" id="serviceTabs"></div>
       <select class="period" id="periodSelect"></select>
     </div>
   </div>
@@ -244,11 +245,6 @@
       <h2>Agents</h2>
       <div class="table-tools">
         <input type="text" id="search" placeholder="Rechercher un agent…" style="width:180px">
-        <select id="activiteFilter">
-          <option value="">Toute activité</option>
-          <option value="Front">Front</option>
-          <option value="Asynchrone">Asynchrone</option>
-        </select>
         <select id="statutFilter">
           <option value="">Tous statuts</option>
           <option value="actif">Actif</option>
@@ -300,6 +296,11 @@
         <option value="mutualisation_out">Mutualisation sortante</option>
       </select>
       <input type="date" id="neDate">
+      <select id="neFlux">
+        <option value="">Activité inchangée</option>
+        <option value="Front">→ Front</option>
+        <option value="Asynchrone">→ Asynchrone</option>
+      </select>
       <input type="text" id="neNote" placeholder="Note (optionnel)" style="width:180px">
       <button class="btn small" id="saveEvent">Enregistrer</button>
       <button class="btn ghost small" id="cancelEvent">Annuler</button>
@@ -313,10 +314,11 @@
 const SITES = ['ALH'];
 let state = { agents: [], events: [], imported: false };
 let currentSite = 'ALH';
+let currentService = 'Tous'; // 'Tous' | 'Front' | 'Asynchrone'
 let currentMonth = null; // 'YYYY-MM'
 let statutFilter = '';
-let activiteFilter = '';
 let searchTerm = '';
+const SERVICES = ['Tous','Front','Asynchrone'];
 
 const $ = (id) => document.getElementById(id);
 const fmtNum = (n) => n.toLocaleString('fr-FR');
@@ -367,12 +369,12 @@ function seedData(){
   const events = [];
   let eid = 1;
   agents.forEach(a=>{
-    events.push({ id: eid++, date: a.dateEntree, type:'integration', agentId:a.id, equipe:a.equipe, site:a.site, note:'' });
+    events.push({ id: eid++, date: a.dateEntree, type:'integration', agentId:a.id, equipe:a.equipe, site:a.site, flux:a.flux, note:'' });
     if(a.statut === 'parti'){
-      events.push({ id: eid++, date: a.dateSortie, type:'depart', agentId:a.id, equipe:a.equipe, site:a.site, note:'' });
+      events.push({ id: eid++, date: a.dateSortie, type:'depart', agentId:a.id, equipe:a.equipe, site:a.site, flux:a.flux, note:'' });
     }
     if(a.statut === 'mutualise'){
-      events.push({ id: eid++, date: months[4]+'-05', type:'mutualisation_in', agentId:a.id, equipe:a.equipe, site:a.site, note:'ASY' });
+      events.push({ id: eid++, date: months[4]+'-05', type:'mutualisation_in', agentId:a.id, equipe:a.equipe, site:a.site, flux:a.flux, note:'ASY' });
     }
   });
   events.sort((x,y)=> x.date < y.date ? 1 : -1);
@@ -399,17 +401,17 @@ async function saveState(){
 function filteredAgents(){
   return state.agents.filter(a=>{
     if(currentSite !== 'Tous' && a.site !== currentSite) return false;
+    if(currentService !== 'Tous' && a.flux !== currentService) return false;
     if(statutFilter && a.statut !== statutFilter) return false;
-    if(activiteFilter && a.flux !== activiteFilter) return false;
     if(searchTerm && !(a.nom.toLowerCase().includes(searchTerm) || a.equipe.toLowerCase().includes(searchTerm))) return false;
     return true;
   });
 }
 function agentsInScope(){
-  return state.agents.filter(a=> currentSite === 'Tous' || a.site === currentSite);
+  return state.agents.filter(a=> (currentSite === 'Tous' || a.site === currentSite) && (currentService === 'Tous' || a.flux === currentService));
 }
 function eventsInScope(){
-  return state.events.filter(e=> currentSite === 'Tous' || e.site === currentSite);
+  return state.events.filter(e=> (currentSite === 'Tous' || e.site === currentSite) && (currentService === 'Tous' || e.flux === currentService));
 }
 function eventsInPeriod(){
   return eventsInScope().filter(e=> !currentMonth || monthKey(e.date) === currentMonth);
@@ -427,6 +429,7 @@ function computeKPIs(){
 }
 
 function render(){
+  renderServiceTabs();
   renderPeriodSelect();
   const k = computeKPIs();
   $('effectifActuel').textContent = fmtNum(k.effectif);
@@ -435,7 +438,7 @@ function render(){
   $('fluxMutIn').textContent = fmtNum(k.mutIn);
   $('fluxMutOut').textContent = fmtNum(k.mutOut);
   $('kpiEffectif').textContent = fmtNum(k.effectif);
-  $('kpiEffectifSub').textContent = 'site ALH';
+  $('kpiEffectifSub').textContent = currentService === 'Tous' ? 'site ALH' : 'ALH · ' + currentService;
   $('kpiInteg').textContent = fmtNum(k.integ);
   $('kpiDepart').textContent = fmtNum(k.depart);
   const solde = k.mutIn - k.mutOut;
@@ -448,6 +451,17 @@ function render(){
   renderTable();
   renderJournal();
   renderEventAgentSelect();
+}
+function renderServiceTabs(){
+  const wrap = $('serviceTabs');
+  wrap.innerHTML = '';
+  SERVICES.forEach(s=>{
+    const b = document.createElement('button');
+    b.textContent = s;
+    if(s===currentService) b.classList.add('active');
+    b.onclick = ()=>{ currentService = s; render(); };
+    wrap.appendChild(b);
+  });
 }
 function renderPeriodSelect(){
   const sel = $('periodSelect');
@@ -599,7 +613,6 @@ function renderEventAgentSelect(){
 // ---------- interactions ----------
 $('search').addEventListener('input', (e)=>{ searchTerm = e.target.value.toLowerCase(); renderTable(); });
 $('statutFilter').addEventListener('change', (e)=>{ statutFilter = e.target.value; renderTable(); });
-$('activiteFilter').addEventListener('change', (e)=>{ activiteFilter = e.target.value; renderTable(); });
 
 $('openAddAgent').onclick = ()=> $('addAgentForm').style.display = 'flex';
 $('cancelAgent').onclick = ()=> $('addAgentForm').style.display = 'none';
@@ -612,7 +625,7 @@ $('saveAgent').onclick = async ()=>{
   if(!nom || !equipe) { alert("Merci de renseigner le nom et l'équipe."); return; }
   const id = Math.max(0,...state.agents.map(a=>a.id)) + 1;
   state.agents.push({ id, nom, equipe, site, flux, statut:'actif', dateEntree:date, dateSortie:null, prodHistory:[] });
-  state.events.push({ id: Math.max(0,...state.events.map(e=>e.id))+1, date, type:'integration', agentId:id, equipe, site, note:'' });
+  state.events.push({ id: Math.max(0,...state.events.map(e=>e.id))+1, date, type:'integration', agentId:id, equipe, site, flux, note:'' });
   $('naNom').value=''; $('naEquipe').value=''; $('naDate').value='';
   $('addAgentForm').style.display='none';
   await saveState();
@@ -625,14 +638,16 @@ $('saveEvent').onclick = async ()=>{
   const agentId = parseInt($('neAgent').value,10);
   const type = $('neType').value;
   const date = $('neDate').value || todayStr();
+  const targetFlux = $('neFlux').value;
   const note = $('neNote').value.trim();
   const agent = state.agents.find(a=>a.id===agentId);
   if(!agent) return;
-  state.events.push({ id: Math.max(0,...state.events.map(e=>e.id))+1, date, type, agentId, equipe:agent.equipe, site:agent.site, note });
+  if((type==='mutualisation_in' || type==='mutualisation_out') && targetFlux) agent.flux = targetFlux;
+  state.events.push({ id: Math.max(0,...state.events.map(e=>e.id))+1, date, type, agentId, equipe:agent.equipe, site:agent.site, flux: agent.flux, note: targetFlux && note ? `→ ${targetFlux} · ${note}` : (targetFlux ? `→ ${targetFlux}` : note) });
   if(type==='depart'){ agent.statut='parti'; agent.dateSortie=date; }
   if(type==='mutualisation_in' || type==='mutualisation_out'){ agent.statut='mutualise'; }
   if(type==='integration'){ agent.statut='actif'; }
-  $('neNote').value='';
+  $('neNote').value=''; $('neFlux').value='';
   $('addEventForm').style.display='none';
   await saveState();
   render();
@@ -696,7 +711,7 @@ function processRosterRecords(allRecords){
         const dir = newStatut === 'mutualise' ? `${rec.homeFlux} → ${rec.flux}` : `retour ${rec.flux}`;
         state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: todayStr(),
           type: newStatut === 'mutualise' ? 'mutualisation_in' : 'mutualisation_out',
-          agentId: agent.id, equipe: rec.equipe, site: rec.site, note: dir });
+          agentId: agent.id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note: dir });
         if(newStatut === 'mutualise') mutualises++; else retours++;
       }
       updated++;
@@ -707,11 +722,11 @@ function processRosterRecords(allRecords){
       state.agents.push(agent);
       if(newStatut === 'mutualise'){
         state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.dateEntree, type:'mutualisation_in',
-                             agentId: id, equipe: rec.equipe, site: rec.site, note: `${rec.homeFlux} → ${rec.flux}` });
+                             agentId: id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note: `${rec.homeFlux} → ${rec.flux}` });
         mutualises++;
       }else{
         state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.dateEntree, type:'integration',
-                             agentId: id, equipe: rec.equipe, site: rec.site, note:'Import fichier' });
+                             agentId: id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note:'Import fichier' });
       }
       added++;
     }
@@ -772,7 +787,7 @@ function processMovementRecords(allRecords){
       agent.statut = 'parti';
       agent.dateSortie = rec.date;
       state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.date, type:'depart',
-                           agentId: agent.id, equipe: agent.equipe, site: agent.site, note: rec.motif || '' });
+                           agentId: agent.id, equipe: agent.equipe, site: agent.site, flux: agent.flux, note: rec.motif || '' });
       departs++;
     }else if(rec.type === 'mutualisation_in'){
       if(agent.statut !== 'parti'){
@@ -780,11 +795,11 @@ function processMovementRecords(allRecords){
         if(rec.mutTarget) agent.flux = rec.mutTarget;
       }
       state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.date, type:'mutualisation_in',
-                           agentId: agent.id, equipe: agent.equipe, site: agent.site, note: rec.mutTarget ? `→ ${rec.mutTarget}` : '' });
+                           agentId: agent.id, equipe: agent.equipe, site: agent.site, flux: agent.flux, note: rec.mutTarget ? `→ ${rec.mutTarget}` : '' });
       mutualises++;
     }else if(rec.type === 'absence'){
       state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.date, type:'absence',
-                           agentId: agent.id, equipe: agent.equipe, site: agent.site,
+                           agentId: agent.id, equipe: agent.equipe, site: agent.site, flux: agent.flux,
                            note: (rec.motif || '') + (rec.dateRetour ? ` · retour prévu ${rec.dateRetour}` : '') });
       absences++;
     }
