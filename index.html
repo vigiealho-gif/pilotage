@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pilotage Flux &amp; Effectifs</title>
+<title>Workforce &amp; Operations Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -174,8 +174,8 @@
 <header class="top">
   <div class="top-row">
     <div class="brand">
-      <h1>Pilotage Flux &amp; Effectifs</h1>
-      <span id="periodLabel">— vue d'ensemble</span>
+      <h1>Workforce &amp; Operations Control</h1>
+      <span id="periodLabel">— overview</span>
     </div>
     <div class="controls">
       <div class="tabs" id="serviceTabs"></div>
@@ -189,16 +189,16 @@
   <!-- FLUX HERO -->
   <section class="flux">
     <div class="flux-side">
-      <div class="flux-metric"><span class="dot in"></span><span class="num mono" id="fluxIn">0</span><span class="lbl">intégrations</span></div>
-      <div class="flux-metric"><span class="dot mut"></span><span class="num mono" id="fluxMutIn">0</span><span class="lbl">mutualisations entrantes</span></div>
+      <div class="flux-metric"><span class="dot in"></span><span class="num mono" id="fluxIn">0</span><span class="lbl">integrations</span></div>
+      <div class="flux-metric"><span class="dot mut"></span><span class="num mono" id="fluxMutIn">0</span><span class="lbl">incoming transfers</span></div>
     </div>
     <div class="flux-center">
       <div class="gauge mono" id="effectifActuel">0</div>
-      <div class="gauge-lbl">effectif actuel</div>
+      <div class="gauge-lbl">current headcount</div>
     </div>
     <div class="flux-side right">
-      <div class="flux-metric"><span class="dot out"></span><span class="num mono" id="fluxOut">0</span><span class="lbl">départs</span></div>
-      <div class="flux-metric"><span class="dot mut"></span><span class="num mono" id="fluxMutOut">0</span><span class="lbl">mutualisations sortantes</span></div>
+      <div class="flux-metric"><span class="dot out"></span><span class="num mono" id="fluxOut">0</span><span class="lbl">departures</span></div>
+      <div class="flux-metric"><span class="dot mut"></span><span class="num mono" id="fluxMutOut">0</span><span class="lbl">outgoing transfers</span></div>
     </div>
     <div class="pipe" id="pipeBar"></div>
   </section>
@@ -206,35 +206,35 @@
   <!-- KPI ROW -->
   <section class="kpis">
     <div class="kpi pine">
-      <div class="lbl">Effectif actuel</div>
+      <div class="lbl">Current headcount</div>
       <div class="val mono" id="kpiEffectif">0</div>
-      <div class="sub" id="kpiEffectifSub">tous sites</div>
+      <div class="sub" id="kpiEffectifSub">all sites</div>
     </div>
     <div class="kpi">
-      <div class="lbl">Intégrations (période)</div>
+      <div class="lbl">Integrations (period)</div>
       <div class="val mono" id="kpiInteg">0</div>
-      <div class="sub">nouvelles arrivées</div>
+      <div class="sub">new joiners</div>
     </div>
     <div class="kpi rust">
-      <div class="lbl">Départs (période)</div>
+      <div class="lbl">Departures (period)</div>
       <div class="val mono" id="kpiDepart">0</div>
-      <div class="sub">sorties d'effectif</div>
+      <div class="sub">staff exits</div>
     </div>
     <div class="kpi amber">
-      <div class="lbl">Solde mutualisation</div>
+      <div class="lbl">Transfer balance</div>
       <div class="val mono" id="kpiMut">0</div>
-      <div class="sub" id="kpiMutSub">entrées − sorties</div>
+      <div class="sub" id="kpiMutSub">incoming − outgoing</div>
     </div>
   </section>
 
   <!-- CHART + TEAMS -->
   <section class="grid2">
     <div class="panel">
-      <h2>Évolution de l'effectif (6 derniers mois)</h2>
+      <h2>Headcount trend (last 6 months)</h2>
       <svg id="chart" viewBox="0 0 560 180" width="100%" height="180" preserveAspectRatio="none"></svg>
     </div>
     <div class="panel">
-      <h2>Répartition par équipe</h2>
+      <h2>Team distribution</h2>
       <div id="teamBars"></div>
     </div>
   </section>
@@ -242,18 +242,18 @@
   <!-- TABLE -->
   <section class="table-panel">
     <div class="table-head">
-      <h2>Agents</h2>
+      <h2>Employees</h2>
       <div class="table-tools">
-        <input type="text" id="search" placeholder="Rechercher un agent…" style="width:180px">
+        <input type="text" id="search" placeholder="Search an employee…" style="width:180px">
         <select id="statutFilter">
-          <option value="">Tous statuts</option>
-          <option value="actif">Actif</option>
-          <option value="parti">Parti</option>
-          <option value="mutualise">Mutualisé</option>
+          <option value="">All statuses</option>
+          <option value="actif">Active</option>
+          <option value="parti">Departed</option>
+          <option value="mutualise">Transferred</option>
         </select>
-        <button class="btn ghost" id="openImport">Importer un fichier</button>
+        <button class="btn ghost" id="openImport">Import file</button>
         <input type="file" id="importInput" accept=".xlsx,.xls,.csv" multiple style="display:none">
-        <button class="btn" id="openAddAgent">+ Agent</button>
+        <button class="btn" id="openAddAgent">+ Employee</button>
       </div>
     </div>
     <div id="importStatus" style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;"></div>
@@ -261,73 +261,73 @@
       <table>
         <thead>
           <tr>
-            <th>Agent</th><th>Activité</th><th>Équipe</th><th>Site</th><th>Statut</th><th>Entrée</th><th>Prod horaire moy.</th><th>Tendance</th><th></th>
+            <th>Agent</th><th>Activity</th><th>Team</th><th>Site</th><th>Status</th><th>Start date</th><th>Avg. hourly output</th><th>Trend</th><th></th>
           </tr>
         </thead>
         <tbody id="agentsBody"></tbody>
       </table>
     </div>
     <div class="add-form" id="addAgentForm" style="display:none;">
-      <span>Nouvel agent</span>
-      <input type="text" id="naNom" placeholder="Nom complet" style="width:160px">
-      <input type="text" id="naEquipe" placeholder="Équipe (ex: CC FRONT)" style="width:130px">
+      <span>New employee</span>
+      <input type="text" id="naNom" placeholder="Full name" style="width:160px">
+      <input type="text" id="naEquipe" placeholder="Team (ex: CC FRONT)" style="width:130px">
       <input type="hidden" id="naSite" value="ALH">
-      <select id="naFlux"><option value="Front">Front</option><option value="Asynchrone">Asynchrone</option></select>
+      <select id="naFlux"><option value="Front">Front</option><option value="Asynchronous">Asynchronous</option></select>
       <input type="date" id="naDate">
-      <button class="btn small" id="saveAgent">Enregistrer</button>
-      <button class="btn ghost small" id="cancelAgent">Annuler</button>
+      <button class="btn small" id="saveAgent">Save</button>
+      <button class="btn ghost small" id="cancelAgent">Cancel</button>
     </div>
   </section>
 
   <!-- JOURNAL -->
   <section class="table-panel">
     <div class="table-head">
-      <h2>Journal des mouvements</h2>
-      <button class="btn ghost small" id="openAddEvent">+ Mouvement</button>
+      <h2>Movement log</h2>
+      <button class="btn ghost small" id="openAddEvent">+ Movement</button>
     </div>
     <div id="journalList"></div>
     <div class="add-form" id="addEventForm" style="display:none;">
-      <span>Nouveau mouvement</span>
+      <span>New movement</span>
       <select id="neAgent"></select>
       <select id="neType">
-        <option value="integration">Intégration</option>
-        <option value="depart">Départ</option>
-        <option value="mutualisation_in">Mutualisation entrante</option>
-        <option value="mutualisation_out">Mutualisation sortante</option>
+        <option value="integration">Integration</option>
+        <option value="depart">Departure</option>
+        <option value="mutualisation_in">Incoming transfer</option>
+        <option value="mutualisation_out">Outgoing transfer</option>
       </select>
       <input type="date" id="neDate">
       <select id="neFlux">
-        <option value="">Activité inchangée</option>
+        <option value="">Activity unchanged</option>
         <option value="Front">→ Front</option>
-        <option value="Asynchrone">→ Asynchrone</option>
+        <option value="Asynchronous">→ Asynchronous</option>
       </select>
-      <input type="text" id="neNote" placeholder="Note (optionnel)" style="width:180px">
-      <button class="btn small" id="saveEvent">Enregistrer</button>
-      <button class="btn ghost small" id="cancelEvent">Annuler</button>
+      <input type="text" id="neNote" placeholder="Note (optional)" style="width:180px">
+      <button class="btn small" id="saveEvent">Save</button>
+      <button class="btn ghost small" id="cancelEvent">Cancel</button>
     </div>
   </section>
 
-  <footer class="note">Données stockées localement pour votre compte — modifiables à tout moment.</footer>
+  <footer class="note">Data is stored locally in this browser and can be updated at any time.</footer>
 </main>
 
 <script>
 const SITES = ['ALH'];
 let state = { agents: [], events: [], imported: false };
 let currentSite = 'ALH';
-let currentService = 'Tous'; // 'Tous' | 'Front' | 'Asynchrone'
+let currentService = 'All'; // 'All' | 'Front' | 'Asynchronous'
 let currentMonth = null; // 'YYYY-MM'
 let statutFilter = '';
 let searchTerm = '';
-const SERVICES = ['Tous','Front','Asynchrone'];
+const SERVICES = ['All','Front','Asynchronous'];
 
 const $ = (id) => document.getElementById(id);
-const fmtNum = (n) => n.toLocaleString('fr-FR');
+const fmtNum = (n) => n.toLocaleString('en-US');
 const todayStr = () => new Date().toISOString().slice(0,10);
 
 function monthKey(d){ return d.slice(0,7); }
 function monthLabel(key){
   const [y,m] = key.split('-');
-  const noms = ['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+  const noms = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return noms[parseInt(m,10)-1] + ' ' + y;
 }
 function last6Months(){
@@ -362,7 +362,7 @@ function seedData(){
       const val = Math.max(3.5, base + (Math.sin(i+j)*0.6));
       prodHistory.push({ date: dd.toISOString().slice(0,10), heures: Math.round(val*10)/10 });
     }
-    const flux = i % 3 === 0 ? 'Asynchrone' : 'Front';
+    const flux = i % 3 === 0 ? 'Asynchronous' : 'Front';
     agents.push({ id: id++, nom, equipe, site, flux, statut, dateEntree, dateSortie, prodHistory });
   });
 
@@ -398,20 +398,20 @@ async function saveState(){
   }catch(e){ console.error('Erreur de sauvegarde', e); }
 }
 
-function filteredAgents(){
+function filteredEmployees(){
   return state.agents.filter(a=>{
-    if(currentSite !== 'Tous' && a.site !== currentSite) return false;
-    if(currentService !== 'Tous' && a.flux !== currentService) return false;
+    if(currentSite !== 'All' && a.site !== currentSite) return false;
+    if(currentService !== 'All' && a.flux !== currentService) return false;
     if(statutFilter && a.statut !== statutFilter) return false;
     if(searchTerm && !(a.nom.toLowerCase().includes(searchTerm) || a.equipe.toLowerCase().includes(searchTerm))) return false;
     return true;
   });
 }
 function agentsInScope(){
-  return state.agents.filter(a=> (currentSite === 'Tous' || a.site === currentSite) && (currentService === 'Tous' || a.flux === currentService));
+  return state.agents.filter(a=> (currentSite === 'All' || a.site === currentSite) && (currentService === 'All' || a.flux === currentService));
 }
 function eventsInScope(){
-  return state.events.filter(e=> (currentSite === 'Tous' || e.site === currentSite) && (currentService === 'Tous' || e.flux === currentService));
+  return state.events.filter(e=> (currentSite === 'All' || e.site === currentSite) && (currentService === 'All' || e.flux === currentService));
 }
 function eventsInPeriod(){
   return eventsInScope().filter(e=> !currentMonth || monthKey(e.date) === currentMonth);
@@ -438,12 +438,12 @@ function render(){
   $('fluxMutIn').textContent = fmtNum(k.mutIn);
   $('fluxMutOut').textContent = fmtNum(k.mutOut);
   $('kpiEffectif').textContent = fmtNum(k.effectif);
-  $('kpiEffectifSub').textContent = currentService === 'Tous' ? 'site ALH' : 'ALH · ' + currentService;
+  $('kpiEffectifSub').textContent = currentService === 'All' ? 'ALH site' : 'ALH · ' + currentService;
   $('kpiInteg').textContent = fmtNum(k.integ);
   $('kpiDepart').textContent = fmtNum(k.depart);
   const solde = k.mutIn - k.mutOut;
   $('kpiMut').textContent = (solde>0?'+':'') + fmtNum(solde);
-  $('kpiMutSub').textContent = k.mutIn + ' entrées · ' + k.mutOut + ' sorties';
+  $('kpiMutSub').textContent = k.mutIn + ' incoming · ' + k.mutOut + ' outgoing';
 
   renderPipe(k);
   renderChart();
@@ -467,10 +467,10 @@ function renderPeriodSelect(){
   const sel = $('periodSelect');
   const months = last6Months();
   if(!sel.dataset.built){
-    sel.innerHTML = '<option value="">Toute période</option>' + months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+    sel.innerHTML = '<option value="">All periods</option>' + months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
     sel.dataset.built = '1';
     sel.value = '';
-    sel.onchange = ()=>{ currentMonth = sel.value || null; $('periodLabel').textContent = '— ' + (currentMonth ? monthLabel(currentMonth) : "vue d'ensemble"); render(); };
+    sel.onchange = ()=>{ currentMonth = sel.value || null; $('periodLabel').textContent = '— ' + (currentMonth ? monthLabel(currentMonth) : "overview"); render(); };
   }
 }
 function renderPipe(k){
@@ -523,7 +523,7 @@ function renderTeamBars(){
       <div class="name">${name}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${(count/max*100)}%"></div></div>
       <div class="count mono">${count}</div>
-    </div>`).join('') || '<div class="empty">Aucune donnée</div>';
+    </div>`).join('') || '<div class="empty">No data</div>';
 }
 
 function sparkline(history){
@@ -548,14 +548,14 @@ function avgProd(history){
 
 function renderTable(){
   const body = $('agentsBody');
-  const list = filteredAgents();
+  const list = filteredEmployees();
   if(list.length===0){
-    body.innerHTML = `<tr><td colspan="9" class="empty">Aucun agent ne correspond aux filtres.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" class="empty">No employee matches the selected filters.</td></tr>`;
     return;
   }
   body.innerHTML = list.map(a=>{
     const avg = avgProd(a.prodHistory);
-    const statutLbl = a.statut==='actif' ? 'Actif' : a.statut==='parti' ? 'Parti' : 'Mutualisé';
+    const statutLbl = a.statut==='actif' ? 'Active' : a.statut==='parti' ? 'Departed' : 'Transferred';
     const fluxLbl = (a.homeFlux && a.homeFlux !== a.flux) ? `${a.homeFlux} → ${a.flux}` : (a.flux || '—');
     return `<tr>
       <td>${a.nom}</td>
@@ -566,14 +566,14 @@ function renderTable(){
       <td class="mono">${a.dateEntree}</td>
       <td class="prod-cell"><span class="prod-val mono">${avg!==null ? avg.toFixed(1)+'h' : '—'}</span></td>
       <td>${sparkline(a.prodHistory)}</td>
-      <td><button class="btn ghost small" data-add-mesure="${a.id}">+ mesure</button></td>
+      <td><button class="btn ghost small" data-add-mesure="${a.id}">+ metric</button></td>
     </tr>`;
   }).join('');
 
   body.querySelectorAll('[data-add-mesure]').forEach(btn=>{
     btn.onclick = async ()=>{
       const id = parseInt(btn.getAttribute('data-add-mesure'),10);
-      const val = prompt('Prod horaire du jour (en heures, ex: 6.4)');
+      const val = prompt("Today's hourly output (example: 6.4)");
       if(val === null) return;
       const num = parseFloat(val.replace(',','.'));
       if(isNaN(num)) return;
@@ -587,7 +587,7 @@ function renderTable(){
 }
 
 function eventLabel(type){
-  return { integration:'Intégration', depart:'Départ', mutualisation_in:'Mutualisation entrante', mutualisation_out:'Mutualisation sortante', absence:'Absence longue durée' }[type] || type;
+  return { integration:'Integration', depart:'Departure', mutualisation_in:'Incoming transfer', mutualisation_out:'Outgoing transfer', absence:'Long-term absence' }[type] || type;
 }
 function eventColor(type){
   return { integration:'var(--pine)', depart:'var(--rust)', mutualisation_in:'var(--amber)', mutualisation_out:'var(--amber)', absence:'#8B99AA' }[type] || '#8B99AA';
@@ -595,7 +595,7 @@ function eventColor(type){
 function renderJournal(){
   const evs = eventsInScope().slice().sort((a,b)=> a.date < b.date ? 1 : -1).slice(0,25);
   const wrap = $('journalList');
-  if(evs.length===0){ wrap.innerHTML = '<div class="empty">Aucun mouvement enregistré.</div>'; return; }
+  if(evs.length===0){ wrap.innerHTML = '<div class="empty">No movement recorded.</div>'; return; }
   wrap.innerHTML = evs.map(e=>{
     const agent = state.agents.find(a=>a.id===e.agentId);
     return `<div class="journal-item">
@@ -622,7 +622,7 @@ $('saveAgent').onclick = async ()=>{
   const site = $('naSite').value;
   const flux = $('naFlux').value;
   const date = $('naDate').value || todayStr();
-  if(!nom || !equipe) { alert("Merci de renseigner le nom et l'équipe."); return; }
+  if(!nom || !equipe) { alert("Please enter the employee name and team."); return; }
   const id = Math.max(0,...state.agents.map(a=>a.id)) + 1;
   state.agents.push({ id, nom, equipe, site, flux, statut:'actif', dateEntree:date, dateSortie:null, prodHistory:[] });
   state.events.push({ id: Math.max(0,...state.events.map(e=>e.id))+1, date, type:'integration', agentId:id, equipe, site, flux, note:'' });
@@ -675,13 +675,13 @@ function parseRosterRows(rows){
   // rows: array of objects keyed by header from SheetJS
   const byId = new Map();
   rows.forEach(r=>{
-    const nom = r['Nom Prénom'];
+    const nom = r['Full Name'] || r['Nom Prénom'];
     const site = r['Site'];
     if(!nom || !site) return; // skip blank/footer rows
     const id = r['ID Unique'] || (nom + '|' + site);
-    const dateEntree = excelDateToStr(r['Date entrée prod']);
-    const home = (r['Activité Principale'] || 'Front').trim();      // équipe d'origine
-    const courant = (r['Activité'] || home).trim();                  // activité réellement exercée
+    const dateEntree = excelDateToStr(r['Production Start Date'] || r['Date entrée prod']);
+    const home = (r['Main Activity'] || r['Activité Principale'] || 'Front').trim();
+    const courant = (r['Activity'] || r['Activité'] || home).trim();
     const rec = {
       extId: id,
       nom: String(nom).trim(),
@@ -689,9 +689,9 @@ function parseRosterRows(rows){
       homeFlux: home,
       flux: courant,
       mutualise: home !== courant,
-      equipe: r['Groupe Mayday'] || r['Rôle Mayday'] || 'NON CLASSÉ',
-      role: r['Rôle Mayday'] || '',
-      seniorite: r['Séniorité'] || '',
+      equipe: r['Mayday Group'] || r['Groupe Mayday'] || r['Mayday Role'] || r['Rôle Mayday'] || 'UNCLASSIFIED',
+      role: r['Mayday Role'] || r['Rôle Mayday'] || '',
+      seniorite: r['Seniority'] || r['Séniorité'] || '',
       dateEntree: dateEntree || todayStr()
     };
     const existing = byId.get(id);
@@ -702,31 +702,31 @@ function parseRosterRows(rows){
 function processRosterRecords(allRecords){
   let added = 0, updated = 0, mutualises = 0, retours = 0;
   allRecords.forEach(rec=>{
-    const newStatut = rec.mutualise ? 'mutualise' : 'actif';
+    const newStatus = rec.mutualise ? 'mutualise' : 'actif';
     let agent = state.agents.find(a=>a.extId === rec.extId);
     if(agent){
-      const prevStatut = agent.statut;
-      Object.assign(agent, rec, { statut: prevStatut === 'parti' ? 'parti' : newStatut });
-      if(prevStatut !== 'parti' && prevStatut !== newStatut){
-        const dir = newStatut === 'mutualise' ? `${rec.homeFlux} → ${rec.flux}` : `retour ${rec.flux}`;
+      const prevStatus = agent.statut;
+      Object.assign(agent, rec, { statut: prevStatus === 'parti' ? 'parti' : newStatus });
+      if(prevStatus !== 'parti' && prevStatus !== newStatus){
+        const dir = newStatus === 'mutualise' ? `${rec.homeFlux} → ${rec.flux}` : `retour ${rec.flux}`;
         state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: todayStr(),
-          type: newStatut === 'mutualise' ? 'mutualisation_in' : 'mutualisation_out',
+          type: newStatus === 'mutualise' ? 'mutualisation_in' : 'mutualisation_out',
           agentId: agent.id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note: dir });
-        if(newStatut === 'mutualise') mutualises++; else retours++;
+        if(newStatus === 'mutualise') mutualises++; else retours++;
       }
       updated++;
     }else{
       const id = Math.max(0,...state.agents.map(a=>a.id), 0) + 1;
       agent = { id, extId: rec.extId, nom: rec.nom, equipe: rec.equipe, site: rec.site, flux: rec.flux, homeFlux: rec.homeFlux,
-                statut: newStatut, dateEntree: rec.dateEntree, dateSortie:null, prodHistory:[] };
+                statut: newStatus, dateEntree: rec.dateEntree, dateSortie:null, prodHistory:[] };
       state.agents.push(agent);
-      if(newStatut === 'mutualise'){
+      if(newStatus === 'mutualise'){
         state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.dateEntree, type:'mutualisation_in',
                              agentId: id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note: `${rec.homeFlux} → ${rec.flux}` });
         mutualises++;
       }else{
         state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.dateEntree, type:'integration',
-                             agentId: id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note:'Import fichier' });
+                             agentId: id, equipe: rec.equipe, site: rec.site, flux: rec.flux, note:'File import' });
       }
       added++;
     }
@@ -737,10 +737,10 @@ function processRosterRecords(allRecords){
 // ---------- import from movement logs (Action / Date Action / Motif…) ----------
 function mapMovementAction(action){
   const a = (action||'').trim();
-  if(a === 'Départs') return 'depart';
+  if(a === 'Departures' || a === 'Départs') return 'depart';
   if(a === 'Archived') return 'depart';
-  if(a === 'Mutualisation') return 'mutualisation_in';
-  if(a === 'Absences Longue Durée') return 'absence';
+  if(a === 'Transfer' || a === 'Mutualisation') return 'mutualisation_in';
+  if(a === 'Long-term Absence' || a === 'Absences Longue Durée') return 'absence';
   return null;
 }
 function parseMovementRows(rows){
@@ -759,12 +759,12 @@ function parseMovementRows(rows){
     out.push({
       extId,
       site: siteCode(r['Site']),
-      flux: (r['Activité'] || '').trim(),
+      flux: (r['Activity'] || '').trim(),
       type,
       date,
       motif: r['Motif'] || '',
-      mutTarget: r['Activité de Mutualisation'] || '',
-      dateRetour: excelDateToStr(r['Date de Retour'])
+      mutTarget: r['Activity de Mutualisation'] || '',
+      dateReturn: excelDateToStr(r['Date de Return'])
     });
   });
   return out;
@@ -775,7 +775,7 @@ function processMovementRecords(allRecords){
     let agent = state.agents.find(a=>a.extId === rec.extId);
     if(!agent){
       const id = Math.max(0,...state.agents.map(a=>a.id), 0) + 1;
-      agent = { id, extId: rec.extId, nom: rec.extId, equipe:'Non renseigné', site: rec.site, flux: rec.flux, homeFlux: rec.flux,
+      agent = { id, extId: rec.extId, nom: rec.extId, equipe:'Not provided', site: rec.site, flux: rec.flux, homeFlux: rec.flux,
                 statut:'actif', dateEntree: rec.date, dateSortie:null, prodHistory:[] };
       state.agents.push(agent);
       orphelins++;
@@ -800,7 +800,7 @@ function processMovementRecords(allRecords){
     }else if(rec.type === 'absence'){
       state.events.push({ id: Math.max(0,...state.events.map(e=>e.id),0)+1, date: rec.date, type:'absence',
                            agentId: agent.id, equipe: agent.equipe, site: agent.site, flux: agent.flux,
-                           note: (rec.motif || '') + (rec.dateRetour ? ` · retour prévu ${rec.dateRetour}` : '') });
+                           note: (rec.motif || '') + (rec.dateReturn ? ` · expected return ${rec.dateReturn}` : '') });
       absences++;
     }
   });
@@ -809,7 +809,7 @@ function processMovementRecords(allRecords){
 
 async function importFiles(fileList){
   const statusEl = $('importStatus');
-  statusEl.textContent = 'Lecture du fichier…';
+  statusEl.textContent = 'Reading file…';
   try{
     let rosterRows = [], movementRows = [];
     for(const file of fileList){
@@ -825,7 +825,7 @@ async function importFiles(fileList){
       }
     }
     if(rosterRows.length === 0 && movementRows.length === 0){
-      statusEl.textContent = "Aucune ligne exploitable trouvée dans le fichier.";
+      statusEl.textContent = "No usable rows were found in the file.";
       return;
     }
     // first real import replaces the demo dataset; later imports upsert by extId
@@ -839,18 +839,18 @@ async function importFiles(fileList){
     await saveState();
     render();
     const parts = [];
-    if(r.added) parts.push(`${r.added} agent(s) ajouté(s)`);
-    if(r.updated) parts.push(`${r.updated} mis à jour`);
-    if(r.mutualises) parts.push(`${r.mutualises} passage(s) en mutualisation`);
-    if(r.retours) parts.push(`${r.retours} retour(s) d'activité`);
-    if(m.departs) parts.push(`${m.departs} départ(s) enregistré(s)`);
-    if(m.mutualises) parts.push(`${m.mutualises} mutualisation(s)`);
-    if(m.absences) parts.push(`${m.absences} absence(s) longue durée`);
-    if(m.orphelins) parts.push(`${m.orphelins} agent(s) créé(s) depuis le journal (absents du roster)`);
-    statusEl.textContent = parts.length ? 'Import terminé — ' + parts.join(', ') + '.' : 'Import terminé — aucune nouvelle donnée.';
+    if(r.added) parts.push(`${r.added} employee(s) added`);
+    if(r.updated) parts.push(`${r.updated} updated`);
+    if(r.mutualises) parts.push(`${r.mutualises} transfer(s)`);
+    if(r.retours) parts.push(`${r.retours} activity return(s)`);
+    if(m.departs) parts.push(`${m.departs} departure(s) recorded`);
+    if(m.mutualises) parts.push(`${m.mutualises} transfer(s)`);
+    if(m.absences) parts.push(`${m.absences} long-term absence(s)`);
+    if(m.orphelins) parts.push(`${m.orphelins} employee(s) created from the movement log because they were missing from the roster`);
+    statusEl.textContent = parts.length ? 'Import completed — ' + parts.join(', ') + '.' : 'Import completed — no new data.';
   }catch(err){
     console.error(err);
-    statusEl.textContent = "Erreur de lecture du fichier — vérifie qu'il s'agit bien d'un export .xlsx.";
+    statusEl.textContent = "Unable to read the file — make sure it is a valid .xlsx export.";
   }
 }
 $('openImport').onclick = ()=> $('importInput').click();
